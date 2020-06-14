@@ -75,7 +75,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
     operations.add(getVehicleProjection());
     operations.add(sort(Sort.Direction.DESC, "date_added"));
     TypedAggregation<Warehouse> aggregation =
-        Aggregation.newAggregation(Warehouse.class, operations);
+            Aggregation.newAggregation(Warehouse.class, operations);
     return mongoTemplate.aggregate(aggregation, Vehicle.class).getMappedResults();
   }
 
@@ -145,15 +145,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
 
   private ProjectionOperation getVehicleProjection() {
     return project()
-        .and(
-            context -> {
-              Document doc =
-                  DateOperators.DateFromString.fromStringOf("cars.vehicles.dateAdded")
-                      .toDocument(context);
-              doc.get("$dateFromString", Document.class).put("format", "yyyy-MM-dd");
-              return doc;
-            })
-        .as("date_added")
+        .andInclude(bind("_id", "cars.vehicles.id"))
         .andInclude(bind("make", "cars.vehicles.make"))
         .andInclude(bind("model", "cars.vehicles.model"))
         .andInclude(bind("year_model", "cars.vehicles.year"))

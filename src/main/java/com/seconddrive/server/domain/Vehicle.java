@@ -1,6 +1,7 @@
 package com.seconddrive.server.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,6 +20,7 @@ import java.util.Date;
 @Data
 public class Vehicle {
     @Field("_id")
+    @JsonProperty("_id")
     private BigDecimal id;
     private String make;
     private String model;
