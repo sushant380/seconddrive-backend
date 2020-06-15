@@ -10,4 +10,5 @@ public interface VehicleService {
     Vehicle getVehicleById(Long id);
     VehicleResponse searchVehicle(SearchCriteria criteria);
     VehicleResponse getByModel(String model);
+    VehicleResponse searchByQuery(String query);
 }

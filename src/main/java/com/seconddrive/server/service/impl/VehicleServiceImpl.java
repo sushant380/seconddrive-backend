@@ -42,5 +42,11 @@ public class VehicleServiceImpl implements VehicleService {
         return VehicleResponse.builder().vehicles(filteredVehicles).total(filteredVehicles.size()).page(1).build();
     }
 
+    @Override
+    public VehicleResponse searchByQuery(String query) {
+        List<Vehicle>filteredVehicles= vehicleRepository.searchByQuery(query);
+        return VehicleResponse.builder().vehicles(filteredVehicles).total(filteredVehicles.size()).page(1).build();
+    }
+
 
 }

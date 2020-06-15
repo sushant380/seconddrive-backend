@@ -29,6 +29,7 @@ public class Vehicle {
     private BigDecimal price;
     private Boolean licensed;
     @Field("date_added")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date dateAdded;
 
 }
