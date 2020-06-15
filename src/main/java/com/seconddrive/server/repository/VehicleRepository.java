@@ -14,4 +14,5 @@ public interface VehicleRepository {
     List<Vehicle>findByModel(String model);
     List<Vehicle>findByYear(BigDecimal year);
     List<Vehicle> findBySearchCriteria(SearchCriteria criteria);
+    List<Vehicle> searchByQuery(String q);
 }

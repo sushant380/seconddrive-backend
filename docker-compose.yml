@@ -11,4 +11,4 @@ services:
       - ./data.json:/data.json
     links:
       - mongodb
-    command: mongoimport --host mongodb --db seconddrivedb --collection cars --type json --file data.json --jsonArray
+    command: mongoimport --host mongodb --db seconddrivedb --collection warehouses --type json --file data.json --jsonArray

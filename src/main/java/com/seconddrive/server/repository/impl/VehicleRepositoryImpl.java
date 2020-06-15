@@ -5,16 +5,20 @@ import com.seconddrive.server.criteria.SearchCriteria;
 import com.seconddrive.server.domain.Vehicle;
 import com.seconddrive.server.domain.Warehouse;
 import com.seconddrive.server.repository.VehicleRepository;
+import org.bson.BsonRegularExpression;
 import org.bson.Document;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.AddFieldsOperation;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
-import org.springframework.data.mongodb.core.aggregation.DateOperators;
+import org.springframework.data.mongodb.core.aggregation.ConvertOperators;
 import org.springframework.data.mongodb.core.aggregation.MatchOperation;
 import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.aggregation.TypedAggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.CriteriaDefinition;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
 import javax.inject.Inject;
@@ -129,14 +133,47 @@ public class VehicleRepositoryImpl implements VehicleRepository {
     }
     TypedAggregation<Warehouse> aggregation =
         Aggregation.newAggregation(Warehouse.class, operations);
-    List<Vehicle>filterVehicles=mongoTemplate.aggregate(aggregation, Vehicle.class).getMappedResults();
+    List<Vehicle> filterVehicles =
+        mongoTemplate.aggregate(aggregation, Vehicle.class).getMappedResults();
     if (criteria.getDateRange() != null) {
-        Date from= (Date)criteria.getDateRange().getMin();
-        Date to=(Date)criteria.getDateRange().getMax();
-        return filterVehicles.stream().filter(vehicle -> vehicle.getDateAdded().after(from) && vehicle.getDateAdded().before(to)).collect(Collectors.toList());
+      Date from = (Date) criteria.getDateRange().getMin();
+      Date to = (Date) criteria.getDateRange().getMax();
+      return filterVehicles.stream()
+          .filter(
+              vehicle -> vehicle.getDateAdded().after(from) && vehicle.getDateAdded().before(to))
+          .collect(Collectors.toList());
     }
     return filterVehicles;
+  }
 
+  @Override
+  public List<Vehicle> searchByQuery(String q) {
+    List<AggregationOperation> operations = new ArrayList<>();
+    operations.addAll(getVehicleAggregations());
+   operations.add(Aggregation.addFields().addFieldWithValue("yearString", ConvertOperators.ToString.toString("cars.vehicles.year")).build());
+
+    Query query=new Query();
+    query.addCriteria(Criteria.where("cars.vehicles.model")
+            .regex(".*" + q + ".*"));
+    Criteria criteria=new Criteria();
+
+    Criteria modelCriteria=new Criteria("cars.vehicles.model");
+    BsonRegularExpression modelRegex=new BsonRegularExpression(".*" + q + ".*");
+    modelCriteria.regex(modelRegex);
+    Criteria makeCriteria=new Criteria("cars.vehicles.make");
+    BsonRegularExpression makeRegex=new BsonRegularExpression(".*" + q + ".*");
+    makeCriteria.regex(makeRegex);
+
+    Criteria yearCriteria=new Criteria("yearString");
+    BsonRegularExpression yearRegex=new BsonRegularExpression(".*" + q + ".*");
+    yearCriteria.regex(yearRegex);
+    criteria.orOperator(modelCriteria,makeCriteria,yearCriteria);
+    operations.add(match(criteria));
+    operations.add(getVehicleProjection());
+    operations.add(sort(Sort.Direction.DESC, "date_added"));
+    TypedAggregation<Warehouse> aggregation =
+        Aggregation.newAggregation(Warehouse.class, operations);
+    return mongoTemplate.aggregate(aggregation, Vehicle.class).getMappedResults();
   }
 
   private List<AggregationOperation> getVehicleAggregations() {
@@ -145,15 +182,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
 
   private ProjectionOperation getVehicleProjection() {
     return project()
-        .and(
-            context -> {
-              Document doc =
-                  DateOperators.DateFromString.fromStringOf("cars.vehicles.dateAdded")
-                      .toDocument(context);
-              doc.get("$dateFromString", Document.class).put("format", "yyyy-MM-dd");
-              return doc;
-            })
-        .as("date_added")
+        .andInclude(bind("_id", "cars.vehicles.id"))
         .andInclude(bind("make", "cars.vehicles.make"))
         .andInclude(bind("model", "cars.vehicles.model"))
         .andInclude(bind("year_model", "cars.vehicles.year"))
@@ -178,13 +207,15 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         return match(Criteria.where(field).gte(value[0]));
       case LTE:
         return match(Criteria.where(field).lte(value[0]));
+      case CONTAINS:
+        return match(Criteria.where(field).regex(".*" + value[0] + ".*"));
       case BTW:
         RangeCriteria range = (RangeCriteria) value[0];
 
-          return match(
-              Criteria.where(field)
-                  .gte(((BigDecimal) range.getMin()).doubleValue())
-                  .lte(((BigDecimal) range.getMax()).doubleValue()));
+        return match(
+            Criteria.where(field)
+                .gte(((BigDecimal) range.getMin()).doubleValue())
+                .lte(((BigDecimal) range.getMax()).doubleValue()));
 
       default:
         return null;
@@ -199,6 +230,7 @@ public class VehicleRepositoryImpl implements VehicleRepository {
     NOT,
     GTE,
     LTE,
-    BTW
+    BTW,
+    CONTAINS
   }
 }

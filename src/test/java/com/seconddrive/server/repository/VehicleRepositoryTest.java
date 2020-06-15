@@ -1,5 +1,6 @@
 package com.seconddrive.server.repository;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.seconddrive.server.criteria.RangeCriteria;
 import com.seconddrive.server.criteria.SearchCriteria;
 import com.seconddrive.server.criteria.SortCriteria;
@@ -10,6 +11,7 @@ import com.seconddrive.server.domain.Warehouse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.DateOperators;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -21,12 +23,14 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.map;
 
 @SpringBootTest
 public class VehicleRepositoryTest {
-  @Inject WarehouseRepository warehouseRepository;
-
   @Inject VehicleRepository vehicleRepository;
+
+  @Inject
+    MongoTemplate mongoTemplate;
 
   SimpleDateFormat dateFormat=new SimpleDateFormat("yyyy-MM-dd");
 
@@ -72,8 +76,9 @@ public class VehicleRepositoryTest {
                               .lat(BigDecimal.valueOf(17.69))
                               .longitudes(BigDecimal.valueOf(15.87))
                               .build()).build();
-    warehouseRepository.save(demoWarehouse);
-      warehouseRepository.save(emptyWarehouse);
+      ObjectMapper mapper=new ObjectMapper();
+      mongoTemplate.save(demoWarehouse);
+      mongoTemplate.save(emptyWarehouse);
   }
 
   @Test
@@ -85,6 +90,7 @@ public class VehicleRepositoryTest {
   @Test
   public void test_findAll() {
     List<Vehicle>allVehicles= vehicleRepository.findAll();
+    System.out.println(allVehicles);
     assertThat(allVehicles).size().isGreaterThan(0);
     assertThat(allVehicles).filteredOn(vehicle -> vehicle.getMake().equals("BMW")).extracting(Vehicle::getModel).contains("Q3");
   }
