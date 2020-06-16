@@ -13,7 +13,8 @@ import java.math.BigDecimal;
 @Builder
 @Data
 public class Location {
-    private BigDecimal lat;
+    @Field("lat")
+    private BigDecimal latitude;
     @Field("long")
-    private BigDecimal longitudes;
+    private BigDecimal longitude;
 }

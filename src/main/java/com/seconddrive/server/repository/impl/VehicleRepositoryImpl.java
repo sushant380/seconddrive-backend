@@ -188,7 +188,11 @@ public class VehicleRepositoryImpl implements VehicleRepository {
         .andInclude(bind("year_model", "cars.vehicles.year"))
         .andInclude(bind("price", "cars.vehicles.price"))
         .andInclude(bind("licensed", "cars.vehicles.licensed"))
-        .andInclude(bind("date_added", "cars.vehicles.dateAdded"));
+        .andInclude(bind("date_added", "cars.vehicles.dateAdded"))
+        .andInclude(bind("warehouse", "name"))
+        .andInclude(bind("location", "cars.location"))
+        .andInclude(bind("latitude", "location.latitude"))
+        .andInclude(bind("longitude", "location.longitude"));
   }
 
   private MatchOperation getMatchOperation(String field, Operation operation, Object... value) {
