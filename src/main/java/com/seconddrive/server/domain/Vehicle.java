@@ -31,5 +31,8 @@ public class Vehicle {
     @Field("date_added")
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date dateAdded;
-
+    private String warehouse;
+    private String location;
+    private BigDecimal latitude;
+    private BigDecimal longitude;
 }

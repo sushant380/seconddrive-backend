@@ -41,8 +41,8 @@ public class VehicleRepositoryTest {
             .id(BigDecimal.ONE)
             .location(
                 Location.builder()
-                    .lat(BigDecimal.valueOf(17.59))
-                    .longitudes(BigDecimal.valueOf(15.67))
+                    .latitude(BigDecimal.valueOf(17.59))
+                    .longitude(BigDecimal.valueOf(15.67))
                     .build())
             .cars(
                 Car.builder()
@@ -73,8 +73,8 @@ public class VehicleRepositoryTest {
               Warehouse.builder()
                       .id(BigDecimal.valueOf(3)).location(
                       Location.builder()
-                              .lat(BigDecimal.valueOf(17.69))
-                              .longitudes(BigDecimal.valueOf(15.87))
+                              .latitude(BigDecimal.valueOf(17.69))
+                              .longitude(BigDecimal.valueOf(15.87))
                               .build()).build();
       ObjectMapper mapper=new ObjectMapper();
       mongoTemplate.save(demoWarehouse);

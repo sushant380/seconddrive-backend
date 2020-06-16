@@ -28,4 +28,5 @@ public class Warehouse {
     private BigDecimal id;
     private Location location;
     private Car cars;
+    private String name;
 }
