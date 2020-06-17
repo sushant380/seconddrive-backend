@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +26,9 @@ public class CarController {
 
   @Inject VehicleService vehicleService;
 
-  @ApiOperation(nickname = "getCars", value = "Get all cars", response = VehicleResponse.class)
+  @ApiOperation(nickname = "getCars", value = "Get all cars", response = VehicleResponse.class,
+          produces = "application/json",
+          consumes = "application/json")
   @ApiResponses(
       value = {
         @ApiResponse(code = 200, message = "List of cars", response = VehicleResponse.class),
@@ -40,7 +43,7 @@ public class CarController {
         @ApiResponse(code = 502, message = "Application returned an unexpected error."),
         @ApiResponse(code = 504, message = "Application did not respond in a timely fashion.")
       })
-  @GetMapping(consumes = "application/json", produces = "application/json")
+  @GetMapping( produces = "application/json")
   public ResponseEntity<VehicleResponse> getCars() {
     return new ResponseEntity<>(vehicleService.getAllVehicles(), HttpStatus.OK);
   }
@@ -60,7 +63,7 @@ public class CarController {
         @ApiResponse(code = 502, message = "Application returned an unexpected error."),
         @ApiResponse(code = 504, message = "Application did not respond in a timely fashion.")
       })
-  @GetMapping(path = "/{id}", consumes = "application/json", produces = "application/json")
+  @GetMapping(path = "/{id}", produces = "application/json")
   public ResponseEntity<Vehicle> getCarById(@PathVariable(value = "id") Long id) {
     return new ResponseEntity<>(vehicleService.getVehicleById(id), HttpStatus.OK);
   }
@@ -112,7 +115,7 @@ public class CarController {
         @ApiResponse(code = 502, message = "Application returned an unexpected error."),
         @ApiResponse(code = 504, message = "Application did not respond in a timely fashion.")
       })
-  @GetMapping(path = "/make/{make}", consumes = "application/json", produces = "application/json")
+  @GetMapping(path = "/make/{make}", produces = "application/json")
   public ResponseEntity<VehicleResponse> getCarByMake(@PathVariable(value = "make") String make) {
     return new ResponseEntity<>(vehicleService.getByMake(make), HttpStatus.OK);
   }
@@ -138,7 +141,7 @@ public class CarController {
         @ApiResponse(code = 502, message = "Application returned an unexpected error."),
         @ApiResponse(code = 504, message = "Application did not respond in a timely fashion.")
       })
-  @GetMapping(path = "/search", consumes = "application/json", produces = "application/json")
+  @GetMapping(path = "/search", produces = "application/json")
   public ResponseEntity<VehicleResponse> searchByQuery(@RequestParam(value = "q") String q) {
     return new ResponseEntity<>(vehicleService.searchByQuery(q), HttpStatus.OK);
   }
