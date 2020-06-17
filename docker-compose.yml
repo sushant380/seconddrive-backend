@@ -29,7 +29,7 @@ services:
   seconddrive-frontend-server:
     image: seconddrive-frontend
     environment:
-      - REACT_APP_API_BASE_URL: seconddrive-backend:8080
+      - REACT_APP_API_BASE_URL: http://seconddrive-backend:8080
     ports:
       - "9090:80" # Forward the exposed port 80 on the container to port 80 on the host machine
     restart: always
