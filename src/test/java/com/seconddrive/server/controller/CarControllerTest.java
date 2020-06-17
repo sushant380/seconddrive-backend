@@ -1,7 +1,9 @@
 package com.seconddrive.server.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.seconddrive.server.criteria.SearchCriteria;
+import com.seconddrive.server.criteria.SortCriteria;
 import com.seconddrive.server.domain.Vehicle;
 import com.seconddrive.server.dto.VehicleResponse;
 import com.seconddrive.server.service.VehicleService;
@@ -11,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -20,6 +23,7 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Date;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -106,6 +110,10 @@ public class CarControllerTest {
     SearchCriteria criteria = new SearchCriteria();
     criteria.setWarehouses(Arrays.asList(BigDecimal.valueOf(1)));
     criteria.setMakes(Arrays.asList("BMW"));
+    SortCriteria sortCriteria=new SortCriteria();
+    sortCriteria.setField("make");
+    sortCriteria.setDirection(SortCriteria.Direction.DESC);
+
     when(vehicleService.getAllVehicles()).thenReturn(response);
     this.mockMvc
         .perform(post("/cars/search")
@@ -172,4 +180,27 @@ public class CarControllerTest {
                   .isEqualTo(vehicle.getMake());
             });
   }
+
+    @Test
+    void authenticationException() throws Exception {
+        when(vehicleService.searchByQuery("B")).thenReturn(response);
+        this.mockMvc
+                .perform(
+                        get("/cars")
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void requestParamException() throws Exception {
+        when(vehicleService.searchByQuery("B")).thenReturn(response);
+        this.mockMvc
+                .perform(
+                        get("/cars/search?")
+                                .header(
+                                        HttpHeaders.AUTHORIZATION,
+                                        "Basic " + Base64Utils.encodeToString("test:test".getBytes()))
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
 }

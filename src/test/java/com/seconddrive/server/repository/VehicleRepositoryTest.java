@@ -3,6 +3,7 @@ package com.seconddrive.server.repository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.seconddrive.server.criteria.RangeCriteria;
 import com.seconddrive.server.criteria.SearchCriteria;
+import com.seconddrive.server.criteria.SortCriteria;
 import com.seconddrive.server.domain.Car;
 import com.seconddrive.server.domain.Location;
 import com.seconddrive.server.domain.Vehicle;
@@ -113,10 +114,10 @@ public class VehicleRepositoryTest {
   }
 
   @Test
-  public void findByModel() {
-    assertThat(vehicleRepository.findByMake("Accent"))
-        .extracting(Vehicle::getId)
-        .contains(BigDecimal.valueOf(1));
+  public void findByMake() {
+    assertThat(vehicleRepository.findByMake("Hyundai"))
+        .extracting(Vehicle::getId).first()
+        .isEqualTo(BigDecimal.valueOf(1));
   }
 
   @Test
@@ -132,6 +133,10 @@ public class VehicleRepositoryTest {
     SearchCriteria criteria = new SearchCriteria();
     criteria.setWarehouses(Arrays.asList(BigDecimal.valueOf(1)));
     criteria.setMakes(Arrays.asList("BMW"));
+    SortCriteria sortCriteria=new SortCriteria();
+    sortCriteria.setField("make");
+    sortCriteria.setDirection(SortCriteria.Direction.ASC);
+    criteria.setSort(sortCriteria);
     assertThat(vehicleRepository.findBySearchCriteria(criteria))
         .extracting(Vehicle::getLicensed)
         .contains(true);

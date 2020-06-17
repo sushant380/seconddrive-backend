@@ -41,7 +41,6 @@ public class VehicleServiceTest {
     void getVehicleById(){
         Mockito.when(vehicleRepository.findById(BigDecimal.ONE)).thenReturn(Vehicle.builder().id(BigDecimal.valueOf(6)).build());
         assertThat(vehicleService.getVehicleById(1L)).extracting(Vehicle::getId).isEqualTo(BigDecimal.valueOf(6));
-
     }
 
     @Test
