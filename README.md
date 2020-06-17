@@ -47,9 +47,9 @@ Swagger-docs:<http://localhost:8080/v2/api-docs>.
 The docker compose builds mongodb and seconddrive backend service. It also connects to seconddrive-frontend<https://github.com/sushant380/seconddrive-frontend>. Seconddrive frontend should build an image separately, Dockerfile is include in the seconddrive frontend.
 
 + Applications are running on following ports under docker containers.
-  Frontend: <http://localhost:9090> 
-  backend: <http://localhost:8080>
-  MongoDB: localhost:27017 
+  - Frontend: <http://localhost:9090> 
+  - backend: <http://localhost:8080>
+  - MongoDB: localhost:27017 
 ```bash
 docker-compose up
 ```  
