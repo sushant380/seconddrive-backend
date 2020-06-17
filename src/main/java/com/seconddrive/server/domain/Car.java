@@ -7,11 +7,14 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+/**
+ * Car by location
+ */
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Data
 public class Car {
-    private String location;
-    private List<Vehicle>vehicles;
+  private String location;
+  private List<Vehicle> vehicles;
 }

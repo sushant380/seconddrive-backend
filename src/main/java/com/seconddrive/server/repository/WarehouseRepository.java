@@ -6,6 +6,8 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 
+/**
+ * Crud operations for warehouse repository
+ */
 @Repository
-public interface WarehouseRepository extends MongoRepository<Warehouse, BigDecimal> {
-}
+public interface WarehouseRepository extends MongoRepository<Warehouse, BigDecimal> {}

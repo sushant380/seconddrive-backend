@@ -8,13 +8,17 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.math.BigDecimal;
 
+/**
+ * warehouse location coordinates
+ */
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Data
 public class Location {
-    @Field("lat")
-    private BigDecimal latitude;
-    @Field("long")
-    private BigDecimal longitude;
+  @Field("lat")
+  private BigDecimal latitude;
+
+  @Field("long")
+  private BigDecimal longitude;
 }

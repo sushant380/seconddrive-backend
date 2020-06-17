@@ -5,6 +5,8 @@ services:
     command: mongod
     ports:
       - 27017:27017
+    networks: # Networks to join (Services on the same network can communicate with each other using their name)
+      - backend
   mongo_seed:
     image: mongo
     volumes:
@@ -12,3 +14,27 @@ services:
     links:
       - mongodb
     command: mongoimport --host mongodb --db seconddrivedb --collection warehouses --type json --file data.json --jsonArray
+  seconddrive-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    restart: always
+    environment: # Pass environment variables to the service
+      SPRING_MONGBO_DB_HOST: mongodb
+    networks: # Networks to join (Services on the same network can communicate with each other using their name)
+      - backend
+      - frontend
+  seconddrive-frontend-server:
+    image: seconddrive-frontend
+    environment:
+      - REACT_APP_API_BASE_URL: http://seconddrive-backend:8080
+    ports:
+      - "9090:80" # Forward the exposed port 80 on the container to port 80 on the host machine
+    restart: always
+    networks:
+      - frontend
+networks:
+  backend:
+  frontend:
